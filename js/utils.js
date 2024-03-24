@@ -91,11 +91,12 @@ function getScrollSize() {
  * @returns 
  */
 function elemChildren(node) {
+  if(!node) return
   var temp = {
     "length": 0,
     "splice": Array.prototype.splice
   }
-  len = node.childNodes.length
+  len = node?.childNodes.length
 
   for (let i = 0; i < len; i++) {
     const childItem = node.childNodes[i];

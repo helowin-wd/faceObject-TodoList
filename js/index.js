@@ -1,8 +1,11 @@
 ;(function (node) {
+  // 构造函数-最上面
   var TodoList = function () {
     var _self = this
     this.node = node
     this.inputShow = false
+    this.isEdit = false
+    this.curIdx = null
 
     this.dConfig = {
       plusBtn: '',
@@ -17,23 +20,29 @@
     // 判断 dConfig 的内容，是否存在于 config 中
     for (var key in this.dConfig) {
       if (!this.config.hasOwnProperty(key)) {
+        console.log(errorInfo(key))
         return
       }
     }
 
     this.setConfig()
-
+    // 添加+
     addEvent(this.plusBtn, 'click', function () {
       // 保证this指向TodoList
       _self.showInput(_self, 'open')
     })
-
+    // 输入内容后点击添加项目
     addEvent(this.addBtn, 'click', function () {
       // 保证this指向TodoList
       _self.addBtnClick.call(_self)
     })
+    addEvent(this.oList, 'click', function (e) {
+      var e = e || window.event,
+        tar = e.target || e.srcElement
+      _self.listClick.call(_self, tar)
+    })
   }
-
+  // 原型方法放中间
   TodoList.prototype = {
     getConfig: function () {
       // 获取data-属性
@@ -68,7 +77,7 @@
         contentLen = content.length,
         oItems = this.oList.getElementsByClassName('item'),
         itemLen = oItems.length,
-        text;
+        text
 
       if (contentLen <= 0) return
 
@@ -83,15 +92,45 @@
         }
       }
 
-      var oLi = document.createElement('li')
-      oLi.className = this.itemClass
-      oLi.innerHTML = itemTpl(content)
-      this.oList.appendChild(oLi)
+      if (this.isEdit) {
+        elemChildren(oItems[this.curIdx])[0].innerText = content
+        setInputStatus.apply(_self, [oItems, null, 'add'])
+      } else {
+        var oLi = document.createElement('li')
+        oLi.className = this.itemClass
+        oLi.innerHTML = itemTpl(content)
+        this.oList.appendChild(oLi)
+      }
       setInputShow.call(_self, 'close')
+    },
+    listClick: function (tar) {
+      var _self = this,
+        className = tar.className,
+        oParent = elemParent(tar, 2),
+        oItems = this.oList.getElementsByClassName('item'),
+        itemLen = oItems.length,
+        item
+
+      if (className === 'edit-btn fa fa-edit') {
+        console.log('编辑')
+        for (let i = 0; i < itemLen; i++) {
+          item = oItems[i]
+          item.className = 'item'
+        }
+        oParent.className += ' active'
+        setInputShow.call(_self, 'open')
+        setInputStatus.apply(_self, [oItems, oParent, 'edit'])
+      } else if (className === 'remove-btn fa fa-times') {
+        console.log('删除')
+        oParent.remove()
+      }
     }
   }
 
+  // 工具函数写在最下面
   function setInputShow(action) {
+    var oItems = this.oList.getElementsByClassName('item')
+
     if (action === 'open') {
       this.inputArea.style.display = 'block'
       this.inputShow = true
@@ -99,6 +138,7 @@
       this.inputArea.style.display = 'none'
       this.inputShow = false
       this.content.value = ''
+      setInputStatus.apply(this, [oItems, null, 'add'])
     }
   }
 
@@ -123,6 +163,28 @@
           <a href="javascript:;" class="remove-btn fa fa-times"></a>
         </div>
         `
+  }
+
+  function setInputStatus(oItems, target, status) {
+    if (status === 'edit') {
+      var idx = Array.prototype.indexOf.call(oItems, target),
+        text = elemChildren(target)[0].innerText
+
+      this.addBtn.innerText = `编辑第${idx + 1}项`
+      this.isEdit = true
+      this.curIdx = idx
+      this.content.value = text
+    } else if (status === 'add') {
+      var itemLen = oItems.length,
+        item
+
+      for (let i = 0; i < itemLen; i++) {
+        item = oItems[i]
+        item.className = 'item'
+      }
+      this.addBtn.innerText = '增加项目'
+      this.isEdit = false
+    }
   }
   new TodoList()
 })(document.getElementsByClassName('wrap')[0])
