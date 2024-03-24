@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="css/common.css" />
+    <link rel="stylesheet" href="css/index.css" />
+  </head>
+  <body>
+    <div class="wrap" data-config='{
+      "plusBtn": "j-plus-btn",
+      "inputArea": "input-wrap",
+      "addBtn": "j-add-item",
+      "list": "item-list",
+      "itemClass": "item"
+    }'>
+      <div class="list-hd">
+        <h2>TOdoList</h2>
+        <a href="javascript:;" class="j-plus-btn fa fa-plus"></a>
+      </div>
+      <div class="input-wrap">
+        <div class="input-bd text-input">
+          <input type="text" id="textInput" class="content"/>
+        </div>
+        <div class="btn-bd add-btn">
+          <button class="j-add-item">增加项目</button>
+        </div>
+      </div>
+
+      <div class="list-wrap">
+        <ul class="j-list list item-list"></ul>
+      </div>
+    </div>
+    <ul class="list"></ul>
+    <script type="text/javascript" src="js/utils.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+  </body>
+</html>
